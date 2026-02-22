@@ -1,0 +1,24 @@
+name: fastbook
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pytorch::pytorch>=2.4
+  - pytorch::torchvision>=0.19
+  - pytorch-cuda=12.1
+  - fastai>=2.0.0
+  - graphviz
+  - ipywidgets=8.*
+  - jupyterlab_widgets=3.*
+  - jupyterlab=4.*
+  - matplotlib
+  - nbdev>=0.2.12
+  - numpy<2
+  - pandas
+  - scikit-learn
+  - sentencepiece
+  - pip
+  - pip:
+    - -r /tmp/requirements.txt
