@@ -79,24 +79,48 @@ print(len(df_new))
 import torch
 
 X_tensor = torch.tensor(X.values, dtype=torch.float32)
+
+# view(-1, 1) reshapes a tensor into a 2‑D column vector with one column 
+# and as many rows as needed. -1 tells PyTorch to infer that dimension size.
 y_tensor = torch.tensor(y.values, dtype=torch.float32).view(-1,1)
 
 import torch.nn as nn
 
+
+# X_tensor.shape[1] = N → number of input features.
+
+# Input → Dense layer
+#
+# Takes N input features
+# Produces 16 neurons
+# y = W*x + b
+# W → weight matrix (16 × N)
+# b → bias (16)
+# nn.Linear(X_tensor.shape[1], 16)
+
 model = nn.Sequential(
-    nn.Linear(X_tensor.shape[1], 16),
+    nn.Linear(X_tensor.shape[1], 64),
     nn.ReLU(),
-    nn.Linear(16, 8),
+    nn.Linear(64, 32),
     nn.ReLU(),
-    nn.Linear(8, 1),
-    nn.Sigmoid()
+    nn.Linear(32, 16),
+    nn.ReLU(),
+    nn.Linear(16, 1)
 )
 
-criterion = nn.BCELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+# Binary Cross Entropy loss:
 
-for epoch in range(500):
+# Loss=−[ylog⁡(p)+(1−y)log⁡(1−p)]
+# y = true label
+# p = predicted probability
+# criterion = nn.BCELoss()
+# more stable then above
+criterion = nn.BCEWithLogitsLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+for epoch in range(30000):
     pred = model(X_tensor)
+    # error
     loss = criterion(pred, y_tensor)
 
     optimizer.zero_grad()
@@ -105,3 +129,10 @@ for epoch in range(500):
 
     if epoch % 50 == 0:
         print(epoch, loss.item())
+
+
+# check final params
+# for name, param in model.named_parameters():
+#     print(name, param.data)
+
+torch.save(model.state_dict(), Path(__file__).parent / "model.pth")
