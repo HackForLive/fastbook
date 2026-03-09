@@ -5,15 +5,13 @@ import numpy as np
 from pathlib import Path
 import torch
 
-train_data = pd.read_csv(Path(__file__).parent / 'test.csv')
+test_data = pd.read_csv(Path(__file__).parent / 'test.csv')
 # train_data = pd.read_csv(Path(__file__).parent / 'train.csv')
 
 # Columns
 # PassengerId,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked
 params = ['Pclass_1', 'Pclass_2', 'Male', 'Age_N', 'SibSp',
        'Parch', 'Fare_log_N', 'Embarked_S', 'Embarked_C']
-
-train_data_no_missing = train_data.dropna(axis=0)
 
 def log_10(row):
     return np.log10(row + 1)
@@ -25,7 +23,7 @@ def normalise(row) -> float:
     m_val = max(row)
     return (row/m_val).astype(float)
 
-df_new = train_data_no_missing.assign(
+df_new = test_data.assign(
     Fare_log_N=lambda d: normalise(log_10(d['Fare'])), 
     Pclass_1=lambda d: equal_to_value(d['Pclass'], 1),
     Pclass_2=lambda d: equal_to_value(d['Pclass'], 2),
@@ -66,10 +64,11 @@ with torch.no_grad():
     logits = model(X_test_tensor)
     preds = torch.sigmoid(logits)
 
-pred_labels = (preds > 0.5).float()
+pred_labels = (preds > 0.5).squeeze(-1).to(torch.int64).tolist()
 
 # accuracy = (pred_labels == y_test_tensor).float().mean()
 
 # print("Accuracy:", accuracy.item())
 
-pd.DataFrame(columns=['PassengerId','Survived'], data=[p_id,pred_labels])
+res = pd.DataFrame(columns=['PassengerId','Survived'], data=zip(list(p_id) , pred_labels))
+res.to_csv(Path(__file__).parent / 'result.csv', encoding='utf-8', index=False)

@@ -12,8 +12,6 @@ print(rn)
 
 
 train_data = pd.read_csv(Path(__file__).parent / 'train.csv')
-print(train_data.head(1))
-print(train_data.columns)
 
 
 for i in ['Sex', 'Age','Embarked', 'Parch']:
@@ -29,7 +27,11 @@ cols = ['Pclass', 'Sex', 'Age', 'SibSp',
 
 # pd.notnull()
 
+train_data = train_data.drop(columns=['Cabin'])
 train_data_no_missing = train_data.dropna(axis=0)
+
+print(f"{len(train_data) =}")
+print(f"{len(train_data_no_missing) =}")
 
 def log_10(row):
     return np.log10(row + 1)
@@ -40,15 +42,6 @@ def equal_to_value(row, val) -> Literal[0, 1]:
 def normalise(row) -> float:
     m_val = max(row)
     return (row/m_val).astype(float)
-
-
-# df_new = train_data_no_missing[
-#     ['col1','col2','col3']
-#     ].assign(
-#     col1=lambda d: log_10(d['col1']), 
-#     col2=lambda d: f2(d['col2']), 
-#     col3=lambda d: f3(d['col3'])
-# )
 
 max_age = max(train_data_no_missing['Age'])
 print(max_age)
@@ -67,13 +60,6 @@ df_new = train_data_no_missing.assign(
 y = df_new["Survived"]
 X = df_new[params]
 
-
-
-print(train_data_no_missing.head(20))
-print(df_new.head(5))
-print(y.head(5))
-print(len(train_data))
-print(len(df_new))
 
 
 import torch
@@ -127,7 +113,7 @@ for epoch in range(30000):
     loss.backward()
     optimizer.step()
 
-    if epoch % 50 == 0:
+    if epoch % 1000 == 0:
         print(epoch, loss.item())
 
 
