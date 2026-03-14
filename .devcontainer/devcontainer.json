@@ -3,10 +3,19 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "GitHub.copilot-chat"
+      ]
+    }
+  },
   "runArgs": [
     "--gpus=all",
     "--shm-size=16g"
   ],
-  "forwardPorts": [8888],
-    "postStartCommand": "micromamba run -n fastbook python -m jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root"
+  "forwardPorts": [8888]
+    // "postStartCommand": "micromamba run -n fastbook python -m jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root"
 }

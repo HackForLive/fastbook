@@ -37,12 +37,19 @@ RUN micromamba create -y -n fastbook -f /tmp/environment.yml -c conda-forge \
 # -----------------------------
 # 5️⃣ Set environment as default
 # -----------------------------
-SHELL ["micromamba", "run", "-n", "fastbook", "/bin/bash", "-c"]
+SHELL ["/bin/bash", "-lc"]
+
+# Initialize micromamba for bash and auto-activate fastbook in interactive shells
+# Use single quotes to avoid expanding the hook during build.
+RUN echo "export MAMBA_ROOT_PREFIX=$MAMBA_ROOT_PREFIX" >> /etc/bash.bashrc \
+    && echo "export MAMBA_EXE=/usr/local/bin/micromamba" >> /etc/bash.bashrc \
+    && echo 'eval "$("$MAMBA_EXE" shell hook --shell bash)"' >> /etc/bash.bashrc \
+    && echo "micromamba activate fastbook" >> /etc/bash.bashrc
 
 # -----------------------------
 # 6️⃣ Optional: test PyTorch + CUDA
 # -----------------------------
-RUN python - <<'EOF'
+RUN micromamba run -n fastbook python - <<'EOF'
 import torch
 print("CUDA available:", torch.cuda.is_available())
 print("Torch version:", torch.__version__)
