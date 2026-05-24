@@ -17,6 +17,7 @@ dependencies:
   - nbdev>=0.2.12
   - numpy<2
   - pandas
+  - seaborn
   - scikit-learn
   - sentencepiece
   - pip
