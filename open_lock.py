@@ -96,8 +96,8 @@ def build_trajectory(
 def format_dir(move: tuple[int, int]) -> str:
     move_idx, signed_shift = move
     if signed_shift < 0:
-        return f"[{move_idx}] R->{-signed_shift}"
-    return f"[{move_idx}] L->{signed_shift}"
+        return f"[{move_idx}] --> {-signed_shift}x"
+    return f"[{move_idx}] <-- {signed_shift}x"
 
 
 def render_state(
